@@ -29,7 +29,7 @@
 #'
 #' @importFrom stringr str_count
 #' @importFrom stringi stri_trim_both
-#' @importFrom dplyr filter mutate_at sym
+#' @importFrom dplyr filter across sym
 #' @importFrom tidyr separate
 #' @importFrom purrr map_dfr
 
@@ -90,9 +90,11 @@ separate_series <- function(data,
     sep = ";",
     remove = FALSE,
     fill = "left"
-  ) %>%
-    mutate_at(.vars = vars(column_names), fast_str_squish)
+  )
 
+  data_separated <- data_separated %>%
+    mutate(across(.cols = column_names,
+                  .fns = fast_str_squish))
 
   # check for columns with NAs
   na_columns <- colnames(data_separated)[colSums(is.na(data_separated)) > 0]
